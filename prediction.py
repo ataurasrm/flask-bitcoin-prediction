@@ -1,11 +1,9 @@
 from flask import Flask, render_template
 from fbprophet import Prophet
 from datetime import datetime, timedelta
-from flask_caching import Cache
 import pandas as pd
 
 app = Flask(__name__)
-cache = Cache(app, config={'CACHE_TYPE': 'redis'})
 
 def fetch_historical_data():
     # This is just an example dataset for demonstration
@@ -15,7 +13,7 @@ def fetch_historical_data():
               70000, 69000, 68000, 67000, 68000, 69000, 70000, 71000, 
               72000, 73000, 74000, 73000, 72000, 71000, 70000, 69000]
     }
-    return data
+    return pd.DataFrame(data)
 
 def preprocess_data(data):
     return data
@@ -35,7 +33,6 @@ def make_prediction(model):
     return start_time, end_time, starting_price, ending_price
 
 @app.route('/')
-@cache.cached(timeout=300)
 def index():
     historical_data = fetch_historical_data()
     preprocessed_data = preprocess_data(historical_data)
